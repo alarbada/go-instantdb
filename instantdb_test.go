@@ -28,7 +28,6 @@ func TestTodoApp(t *testing.T) {
 	ctx := context.Background()
 
 	client := newClient()
-	// client.SetDebug()
 
 	deletePreviousTodos(ctx, is)
 
