@@ -1,4 +1,4 @@
-package instantdb
+package idb
 
 import (
 	"context"
