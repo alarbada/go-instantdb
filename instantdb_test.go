@@ -108,8 +108,8 @@ func TestLinks(t *testing.T) {
 		})
 	}
 
-	err = client.Query(ctx, Object{
-		"lists": Object{"todos": struct{}{}},
+	err = client.Query(ctx, O{
+		"lists": O{"todos": struct{}{}},
 		"todos": struct{}{},
 	}, &result)
 	is.NoErr(err)
@@ -128,8 +128,8 @@ func TestLinks(t *testing.T) {
 	})
 	is.NoErr(err)
 
-	err = client.Query(ctx, Object{
-		"lists": Object{"todos": struct{}{}},
+	err = client.Query(ctx, O{
+		"lists": O{"todos": struct{}{}},
 		"todos": struct{}{},
 	}, &result)
 	is.NoErr(err)
@@ -149,7 +149,7 @@ func assertTodos(ctx context.Context, is *is.I, expected []Todo) {
 		Todos []Todo
 	}
 
-	err := client.Query(ctx, Object{"todos": struct{}{}}, &savedTodos)
+	err := client.Query(ctx, O{"todos": struct{}{}}, &savedTodos)
 	is.NoErr(err)
 
 	sort.Slice(savedTodos.Todos, func(i, j int) bool {
@@ -179,7 +179,7 @@ func deletePreviousTodos(ctx context.Context, is *is.I) {
 		Todos []Todo
 	}
 
-	err := client.Query(ctx, Object{"todos": struct{}{}}, &savedTodos)
+	err := client.Query(ctx, O{"todos": struct{}{}}, &savedTodos)
 	is.NoErr(err)
 	if len(savedTodos.Todos) == 0 {
 		return
@@ -199,7 +199,7 @@ func deletePreviousLists(ctx context.Context, is *is.I) {
 		Lists []List
 	}
 
-	err := client.Query(ctx, Object{"lists": struct{}{}}, &savedLists)
+	err := client.Query(ctx, O{"lists": struct{}{}}, &savedLists)
 	is.NoErr(err)
 	if len(savedLists.Lists) == 0 {
 		return

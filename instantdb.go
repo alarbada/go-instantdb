@@ -25,7 +25,8 @@ func (c *Client) SetDebug() {
 	c.client.SetDebug(true)
 }
 
-type Object map[string]any
+// O ia an instaml / instaql type helper.
+type O map[string]any
 
 type APIError struct {
 	Status  string
@@ -59,7 +60,7 @@ func extractErrorMessage(body []byte) string {
 }
 
 func (c *Client) Query(ctx context.Context, query any, result any) error {
-	body := Object{"query": query}
+	body := O{"query": query}
 	req := c.client.R().SetBody(body).SetContext(ctx).SetResult(result)
 	resp, err := req.Post("/admin/query")
 	if err := errFromRes(resp, err); err != nil {
@@ -75,7 +76,7 @@ func (c *Client) Transact(ctx context.Context, steps []Transaction) error {
 		mapped = append(mapped, step.Body())
 	}
 
-	body := Object{"steps": mapped}
+	body := O{"steps": mapped}
 	req := c.client.R().SetBody(body).SetContext(ctx)
 	resp, err := req.Post("/admin/transact")
 	return errFromRes(resp, err)
@@ -126,7 +127,7 @@ func (t Link) Body() []any {
 	return []any{
 		"link",
 		t.from.namespace, t.from.id,
-		Object{t.to.namespace: t.to.id},
+		O{t.to.namespace: t.to.id},
 	}
 }
 
@@ -148,7 +149,7 @@ func (t Unlink) Body() []any {
 	return []any{
 		"unlink",
 		t.from.namespace, t.from.id,
-		Object{t.to.namespace: t.to.id},
+		O{t.to.namespace: t.to.id},
 	}
 }
 
