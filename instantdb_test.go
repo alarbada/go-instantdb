@@ -12,6 +12,20 @@ import (
 	"github.com/matryer/is"
 )
 
+func TestAuth(t *testing.T) {
+	is := is.New(t)
+	ctx := context.Background()
+	client := newClient()
+
+	user1, err := client.CreateToken(ctx, "test@test.gmail")
+	is.NoErr(err)
+
+	user2, err := client.VerifyToken(ctx, user1.RefreshToken)
+	is.NoErr(err)
+
+	is.Equal("", cmp.Diff(user1, user2))
+}
+
 type Todo struct {
 	ID    string `json:"id,omitempty"`
 	Title string `json:"title,omitempty"`
@@ -26,7 +40,6 @@ type List struct {
 func TestTodoApp(t *testing.T) {
 	is := is.New(t)
 	ctx := context.Background()
-
 	client := newClient()
 
 	deletePreviousTodos(ctx, is)
@@ -54,11 +67,9 @@ func TestLinks(t *testing.T) {
 	ctx := context.Background()
 	client := newClient()
 
-	// Clear previous data
 	deletePreviousLists(ctx, is)
 	deletePreviousTodos(ctx, is)
 
-	// Create todos and lists
 	todoIDs := []string{uuid.NewString(), uuid.NewString(), uuid.NewString()}
 	listIDs := []string{uuid.NewString(), uuid.NewString()}
 
@@ -71,7 +82,6 @@ func TestLinks(t *testing.T) {
 	})
 	is.NoErr(err)
 
-	// Link todos to lists
 	err = client.Transact(ctx, []Transaction{
 		(&Link{}).From("lists", listIDs[0]).To("todos", todoIDs[0]),
 		(&Link{}).From("lists", listIDs[0]).To("todos", todoIDs[1]),
@@ -79,7 +89,6 @@ func TestLinks(t *testing.T) {
 	})
 	is.NoErr(err)
 
-	// Query to check links
 	var result struct {
 		Lists []struct {
 			ID    string `json:"id"`
@@ -89,6 +98,7 @@ func TestLinks(t *testing.T) {
 		Todos []Todo `json:"todos"`
 	}
 
+	// I believe insert order is not guaranteed, so let's make it deterministic
 	sortResultNamespaces := func() {
 		sort.Slice(result.Lists, func(i, j int) bool {
 			return result.Lists[i].Title < result.Lists[j].Title
@@ -108,17 +118,16 @@ func TestLinks(t *testing.T) {
 
 	// Assert links
 	is.Equal(len(result.Lists), 2)
-	is.Equal(len(result.Lists[0].Todos), 2) // "Home chores" list has 2 todos
-	is.Equal(len(result.Lists[1].Todos), 1) // "Personal" list has 1 todo
+	is.Equal(len(result.Lists[0].Todos), 2)
+	is.Equal(len(result.Lists[1].Todos), 1)
 	is.Equal(len(result.Todos), 3)
 
 	// Unlink a todo from a list
 	err = client.Transact(ctx, []Transaction{
-		(&Unlink{}).From("lists", listIDs[0]).To("todos", todoIDs[1]), // Unlink "Do laundry" from "Home chores"
+		(&Unlink{}).From("lists", listIDs[0]).To("todos", todoIDs[1]),
 	})
 	is.NoErr(err)
 
-	// Query again to check unlinks
 	err = client.Query(ctx, Object{
 		"lists": Object{"todos": struct{}{}},
 		"todos": struct{}{},
@@ -129,8 +138,8 @@ func TestLinks(t *testing.T) {
 
 	// Assert unlinks
 	is.Equal(len(result.Lists), 2)
-	is.Equal(len(result.Lists[0].Todos), 1) // "Home chores" list now has 1 todo
-	is.Equal(len(result.Lists[1].Todos), 1) // "Personal" list still has 1 todo
+	is.Equal(len(result.Lists[0].Todos), 1)
+	is.Equal(len(result.Lists[1].Todos), 1)
 	is.Equal(len(result.Todos), 3)
 }
 
