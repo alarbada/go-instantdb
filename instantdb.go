@@ -21,8 +21,9 @@ func NewClient(appID, secret string) *Client {
 	return &Client{client}
 }
 
-func (c *Client) SetDebug() {
+func (c *Client) SetDebug() *Client {
 	c.client.SetDebug(true)
+	return c
 }
 
 // O ia an instaml / instaql type helper.
