@@ -143,6 +143,25 @@ func TestLinks(t *testing.T) {
 	is.Equal(len(result.Todos), 3)
 }
 
+func TestLookup(t *testing.T) {
+	is := is.New(t)
+	ctx := context.Background()
+	client := newClient()
+
+	deletePreviousTodos(ctx, is)
+	todos := setupTodos(ctx, is, client)
+
+	updatedTodo := &todos[0]
+	updatedTodo.Done = !updatedTodo.Done
+
+	err := client.Transact(ctx, []Transaction{
+		Update{"todos", Lookup("title", todos[0].Title), Todo{Done: updatedTodo.Done}},
+	})
+	is.NoErr(err)
+
+	assertTodos(ctx, is, todos)
+}
+
 func assertTodos(ctx context.Context, is *is.I, expected []Todo) {
 	client := newClient()
 	var savedTodos struct {

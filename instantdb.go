@@ -224,3 +224,7 @@ func errFromRes(res *resty.Response, err error) error {
 
 	return nil
 }
+
+func Lookup(prop string, val any) string {
+	return fmt.Sprintf("lookup__%s__\"%v\"", prop, val)
+}
