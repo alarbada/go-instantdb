@@ -77,6 +77,10 @@ func (c *Client) Query(ctx context.Context, query any, result any) error {
 }
 
 func (c *Client) Transact(ctx context.Context, steps []Transaction) error {
+	if len(steps) == 0 {
+		return nil
+	}
+
 	var mapped []any
 	for _, step := range steps {
 		mapped = append(mapped, step.Body())
@@ -235,6 +239,10 @@ func Lookup(prop string, val any) string {
 }
 
 func Transact[T any](ctx context.Context, db *Client, vals []T, fn func(T) Transaction) error {
+	if len(vals) == 0 {
+		return nil
+	}
+
 	txs := make([]Transaction, len(vals))
 	for i, val := range vals {
 		txs[i] = fn(val)
