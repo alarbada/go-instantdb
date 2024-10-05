@@ -252,7 +252,7 @@ func Transact[T any](ctx context.Context, db *Client, vals []T, fn func(T) Trans
 	return db.Transact(ctx, txs)
 }
 
-var ErrNoResults = errors.New("no results")
+var ErrNotFound = errors.New("result not found")
 
 func QueryFirst[T any](ctx context.Context, db *Client, query any) (*T, error) {
 	var results []T
@@ -262,7 +262,7 @@ func QueryFirst[T any](ctx context.Context, db *Client, query any) (*T, error) {
 	}
 
 	if len(results) == 0 {
-		return nil, ErrNoResults
+		return nil, ErrNotFound
 	}
 
 	result := results[0]
