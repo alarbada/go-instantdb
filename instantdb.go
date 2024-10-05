@@ -6,7 +6,12 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/google/uuid"
 )
+
+func NewID() string {
+	return uuid.NewString()
+}
 
 type Client struct {
 	client *resty.Client
