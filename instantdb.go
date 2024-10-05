@@ -236,8 +236,8 @@ func Lookup(prop string, val any) string {
 
 func Transact[T any](ctx context.Context, db *Client, vals []T, fn func(T) Transaction) error {
 	txs := make([]Transaction, len(vals))
-	for _, val := range vals {
-		txs = append(txs, fn(val))
+	for i, val := range vals {
+		txs[i] = fn(val)
 	}
 
 	return db.Transact(ctx, txs)
