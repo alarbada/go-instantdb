@@ -3,6 +3,7 @@ package idb
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
@@ -249,4 +250,21 @@ func Transact[T any](ctx context.Context, db *Client, vals []T, fn func(T) Trans
 	}
 
 	return db.Transact(ctx, txs)
+}
+
+var ErrNoResults = errors.New("no results")
+
+func QueryFirst[T any](ctx context.Context, db *Client, query any) (*T, error) {
+	var results []T
+	err := db.Query(ctx, query, &results)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(results) == 0 {
+		return nil, ErrNoResults
+	}
+
+	result := results[0]
+	return &result, nil
 }
