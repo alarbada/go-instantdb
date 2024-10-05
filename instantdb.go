@@ -120,21 +120,23 @@ type target struct {
 	namespace, id string
 }
 
-type Link struct{ from, to target }
+type link struct{ from, to target }
 
-func (t *Link) From(namespace, id string) *Link {
+func Link() *link { return &link{} }
+
+func (t *link) From(namespace, id string) *link {
 	t.from.id = id
 	t.from.namespace = namespace
 	return t
 }
 
-func (t *Link) To(namespace, id string) *Link {
+func (t *link) To(namespace, id string) *link {
 	t.to.id = id
 	t.to.namespace = namespace
 	return t
 }
 
-func (t Link) Body() []any {
+func (t link) Body() []any {
 	return []any{
 		"link",
 		t.from.namespace, t.from.id,

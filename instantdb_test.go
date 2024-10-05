@@ -83,9 +83,9 @@ func TestLinks(t *testing.T) {
 	is.NoErr(err)
 
 	err = client.Transact(ctx, []Transaction{
-		(&Link{}).From("lists", listIDs[0]).To("todos", todoIDs[0]),
-		(&Link{}).From("lists", listIDs[0]).To("todos", todoIDs[1]),
-		(&Link{}).From("lists", listIDs[1]).To("todos", todoIDs[2]),
+		Link().From("lists", listIDs[0]).To("todos", todoIDs[0]),
+		Link().From("lists", listIDs[0]).To("todos", todoIDs[1]),
+		Link().From("lists", listIDs[1]).To("todos", todoIDs[2]),
 	})
 	is.NoErr(err)
 
